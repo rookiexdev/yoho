@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "ts-node-dev src/server.ts",
+    "build": "tsc -b",
+    "start": "node dist/server.js"
+  },
+  "keywords": [
+    "Express",
+    "",
+    "TypeScript"
+  ],
+  "author": "gopal",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@types/express": "^5.0.3",
+    "express": "^5.1.0"
+  }
+}
