@@ -1,5 +1,25 @@
-import "./index.css";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
+import { HomePage, PageNotFound } from "./pages";
+import { MainLayout } from "./layouts";
 
 export default function App() {
-  return <div className="text-4xl text-red-500 underline">Hello world</div>;
+  return <Router />;
+}
+
+function Router() {
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/" element={<MainLayout />}>
+        <Route path="/" index element={<HomePage />} />
+        <Route path="/error" element={<PageNotFound />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Route>
+    )
+  );
+  return <RouterProvider router={router} />;
 }
