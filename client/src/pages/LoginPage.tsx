@@ -12,7 +12,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+    <div className="flex items-center justify-center h-screen">
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md mx-auto my-6">
         <h2 className="text-xl font-semibold mb-4 text-center">Zoho Sign In</h2>
         <input

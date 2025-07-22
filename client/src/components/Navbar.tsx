@@ -6,7 +6,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="flex justify-center w-full bg-white shadow-sm">
+    <nav className="flex justify-center w-full bg-white shadow-sm z-10">
       <div className="container mx-auto px-4 py-3 max-w-6xl">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -25,10 +25,10 @@ export const Navbar = () => {
               Home
             </Link>
             <Link
-              to="/"
+              to="/upload"
               className="text-gray-700 hover:text-indigo-600 transition-colors"
             >
-              Create Document
+              Upload Document
             </Link>
           </div>
 

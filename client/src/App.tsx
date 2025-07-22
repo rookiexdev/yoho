@@ -4,7 +4,7 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { HomePage, LoginPage, PageNotFound } from "./pages";
+import { HomePage, LoginPage, PageNotFound, UploadDocument } from "./pages";
 import { MainLayout } from "./layouts";
 
 export default function App() {
@@ -17,6 +17,7 @@ function Router() {
       <Route path="/" element={<MainLayout />}>
         <Route path="/" index element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/upload" element={<UploadDocument />} />
         <Route path="/error" element={<PageNotFound />} />
         <Route path="*" element={<PageNotFound />} />
       </Route>
