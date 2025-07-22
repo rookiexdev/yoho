@@ -6,6 +6,13 @@ import configs from "../configs";
 const zohoConfigs = configs.zoho;
 
 export const uploadDocument = async (req: Request, res: Response) => {
+  console.log("Here in upload document controller");
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ message: "No file uploaded", success: false });
+  }
+
   const { userId, title, fileUrl, recipientEmail } = req.body;
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
