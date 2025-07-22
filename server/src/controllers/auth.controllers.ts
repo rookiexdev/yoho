@@ -3,21 +3,19 @@ import { generateState, verifyState } from "../utils";
 import config from "../configs";
 import axios from "axios";
 import { prisma } from "../connections";
+import { logger } from "../utils";
 
 const zohoConfigs = config.zoho;
 
 export const redirectToZoho = (req: Request, res: Response) => {
-  const { email, name } = req.query;
-  const state = generateState();
-  const authUrl = `${zohoConfigs.domain}/oauth/v2/auth?response_type=code&client_id=${zohoConfigs.clientId}&scope=${zohoConfigs.scope}&redirect_uri=${zohoConfigs.redirectUri}&access_type=offline&prompt=consent&state=${state}&login_hint=${email}`;
+  const { name, email } = req.query as { name: string; email: string };
+  const state = generateState(name, email);
+  const authUrl = `${zohoConfigs.domain}/oauth/v2/auth?response_type=code&client_id=${zohoConfigs.clientId}&scope=${zohoConfigs.scope}&redirect_uri=${zohoConfigs.redirectUri}&access_type=offline&prompt=consent&state=${state}`;
   res.redirect(authUrl);
 };
 
 export const handleZohoCallback = async (req: Request, res: Response) => {
-  const { code, state, email, name } = req.query;
-  if (!verifyState(state as string))
-    return res.status(403).json({ message: "Invalid state", success: false });
-
+  const { code, state } = req.query;
   try {
     const tokenRes = await axios.post(
       `${zohoConfigs.domain}/oauth/v2/token`,
@@ -35,6 +33,8 @@ export const handleZohoCallback = async (req: Request, res: Response) => {
     );
 
     const { access_token, refresh_token } = tokenRes.data;
+    const userInfo = JSON.parse(state as string);
+    const { name, email } = userInfo;
 
     await prisma.user.upsert({
       where: { email: email as string },
@@ -51,10 +51,40 @@ export const handleZohoCallback = async (req: Request, res: Response) => {
       },
     });
 
-    res
-      .status(200)
-      .json({ message: "Zoho Auth successful. Tokens saved.", success: true });
+    res.status(200).send(`
+  <html>
+    <head>
+      <title>Zoho Auth Successful</title>
+      <style>
+        body {
+          font-family: sans-serif;
+          background-color: #f9fafb;
+          text-align: center;
+          padding: 50px;
+        }
+        .box {
+          background-color: #ffffff;
+          padding: 40px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          display: inline-block;
+        }
+        h1 {
+          color: #16a34a;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <h1>✅ Authentication Successful!</h1>
+        <p>You have been successfully logged in with Zoho.</p>
+        <p>You can now close this window or return to the app.</p>
+      </div>
+    </body>
+  </html>
+`);
   } catch (err) {
+    logger.error(err);
     res.status(500).json({ message: "OAuth failed", success: false });
   }
 };

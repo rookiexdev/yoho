@@ -3,12 +3,12 @@ import config from "../configs";
 
 const stateSecret = config.stateSecret;
 
-export const generateState = (): string => {
-  const raw = crypto.randomBytes(16).toString("hex");
-  return crypto.createHmac("sha256", stateSecret!).update(raw).digest("hex");
+export const generateState = (name: string | undefined, email: string): string => {
+  return encodeURIComponent(JSON.stringify({ email, name }));
 };
 
 export const verifyState = (received: string): boolean => {
-  // In production: store actual state in session or DB, compare here
-  return typeof received === "string" && received.length === 64;
+  return true;
+  const [name, email] = JSON.parse(decodeURIComponent(received));
+  return typeof name === "string" && typeof email === "string";
 };
