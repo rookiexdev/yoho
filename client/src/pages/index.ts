@@ -1,4 +1,3 @@
-import HomePage from "./Homepage";
-import PageNotFound from "./PageNotFound";
-
-export { HomePage, PageNotFound };
+export * from "./Homepage";
+export * from "./PageNotFound";
+export * from "./LoginPage"
