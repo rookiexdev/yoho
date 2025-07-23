@@ -7,3 +7,4 @@
 /server/dist
 /server/.env
 /server/logs
+/server/src/uploads

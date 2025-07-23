@@ -2,20 +2,21 @@ import { Request, Response } from "express";
 import { prisma } from "../connections";
 import axios from "axios";
 import configs from "../configs";
+import { logger } from "../utils";
 
 const zohoConfigs = configs.zoho;
 
 export const uploadDocument = async (req: Request, res: Response) => {
-  console.log("Here in upload document controller");
   if (!req.file) {
     return res
       .status(400)
       .json({ message: "No file uploaded", success: false });
   }
 
-  const { userId, title, fileUrl, recipientEmail } = req.body;
+  const { title, email, name } = req.body;
+  const fileUrl = req.file.filename;
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.zohoAccessToken)
     return res
       .status(404)
@@ -29,8 +30,8 @@ export const uploadDocument = async (req: Request, res: Response) => {
         action_type: "SIGN",
         signers: [
           {
-            recipient_name: user.name,
-            recipient_email: recipientEmail,
+            recipient_name: name,
+            recipient_email: email,
             action: "SIGN",
           },
         ],
@@ -48,7 +49,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
       data: {
         title,
         originalUrl: fileUrl,
-        userId,
+        userId: user.id,
         status: "sent",
         zohoRequestId: uploadResponse.data.request_id,
       },
@@ -56,6 +57,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
 
     res.status(200).json(uploadResponse.data);
   } catch (error) {
+    logger.error(error);
     res
       .status(500)
       .json({ message: "Failed to create signature request", error });
